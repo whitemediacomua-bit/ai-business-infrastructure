@@ -1,0 +1,15 @@
+import telebot
+
+TOKEN = "8451558478:AAEzQ7OGTm5feaN9PYB5QNZUWlfEwM-uuzs"
+
+bot = telebot.TeleBot(TOKEN)
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(message.chat.id, "Привіт! Я AI-бот для автоматизації бізнесу 🚀")
+
+@bot.message_handler(func=lambda message: True)
+def echo(message):
+    bot.send_message(message.chat.id, "Заявка отримана ✅ Менеджер зв'яжеться з вами.")
+
+bot.polling()
