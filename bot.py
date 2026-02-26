@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 from database import create_table, add_user, get_all_users
 from ai import ask_ai
 
-TOKEN = os.getenv("8451558478:AAEzQ7OGTm5feaN9PYB5QNZUWlfEwM-uuzs")
+TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 create_table()
 
