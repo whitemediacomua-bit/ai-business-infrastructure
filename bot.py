@@ -1,6 +1,13 @@
 import os
 from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    ContextTypes,
+)
+
 from database import create_table, add_user, get_all_users
 from ai.ai import ask_ai
 
@@ -44,25 +51,14 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Розсилка завершена ✅")
 
 app = ApplicationBuilder().token(TOKEN).build()
+
 app.add_handler(CommandHandler("start", start))
-from telegram.ext import MessageHandler, filters
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_buttons))
 app.add_handler(CommandHandler("broadcast", broadcast))
+
+# 🔹 СПОЧАТКУ кнопки
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_buttons))
+
+# 🔹 ПОТІМ AI відповіді
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
 app.run_polling(drop_pending_updates=True)
-
-async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
-
-    if text == "🚀 Консультація":
-        await update.message.reply_text("Напишіть ваш номер телефону, і я зв’яжусь з вами 📞")
-
-    elif text == "📈 Послуги":
-        await update.message.reply_text("Я запускаю рекламу Meta Ads, Google Ads та створюю AI-ботів.")
-
-    elif text == "💰 Ціни":
-        await update.message.reply_text("Ціни стартують від 300$. Деталі — на консультації.")
-
-    elif text == "🎁 Безкоштовний аудит":
-        await update.message.reply_text("Напишіть 'аудит', і я проведу безкоштовний розбір вашої реклами.")
