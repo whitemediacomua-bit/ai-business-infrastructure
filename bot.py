@@ -16,9 +16,12 @@ TOKEN = os.getenv("TELEGRAM_TOKEN")
 create_table()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    add_user(user.id, user.username)
+
     keyboard = [
         ["🚀 Консультація"],
-        ["📈 Послуги"],
+        ["📋 Послуги"],
         ["💰 Ціни"],
         ["🎁 Безкоштовний аудит"]
     ]
@@ -29,6 +32,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Вітаю 👋\nЯ допомагаю бізнесу отримувати клієнтів через рекламу та AI.\n\nОберіть, що вас цікавить:",
         reply_markup=reply_markup
     )
+    
     user = update.effective_user
     add_user(user.id, user.username)
     await update.message.reply_text("Вітаю! Я AI-консультант для бізнесу 🚀")
