@@ -1,4 +1,5 @@
 import os
+import random
 from telegram import InlineKeyboardMarkup,InlineKeyboardButton
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
@@ -14,6 +15,55 @@ from database import create_table, add_user, get_all_users
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 create_table()
+
+def detect_intent(text):
+    text = text.lower()
+
+    if any(word in text for word in ["ціна", "скільки", "вартість"]):
+        return "price"
+
+    if any(word in text for word in ["реклама", "meta", "google"]):
+        return "ads"
+
+    if any(word in text for word in ["бот", "ai"]):
+        return "bot"
+
+    if any(word in text for word in ["хочу", "запуск", "працювати"]):
+        return "start"
+
+    return "general"
+
+
+def generate_ai_response(intent):
+
+    responses = {
+        "price": [
+            "Повний пакет запуску під ключ — 1200$.\nВключає рекламу, креативи та аналітику.",
+            "Базовий запуск стартує від 100$. Хочете підберемо варіант під вас?"
+        ],
+
+        "ads": [
+            "Ми запускаємо Meta Ads та Google Ads з аналітикою.",
+            "Яка у вас ніша та бюджет?"
+        ],
+
+        "bot": [
+            "AI-боти автоматично обробляють заявки 24/7.",
+            "Хочете бот для продажів чи підтримки?"
+        ],
+
+        "start": [
+            "Супер 👌 Розкажіть про вашу нішу.",
+            "Яка ваша основна ціль зараз?"
+        ],
+
+        "general": [
+            "Розкажіть трохи більше про ваш бізнес.",
+            "Я підкажу оптимальне рішення для вас."
+        ]
+    }
+
+    return random.choice(responses[intent])
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -73,14 +123,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text_lower = text.lower()
 
-    if "ціна" in text_lower or "скільки" in text_lower:
-        await update.message.reply_text(
-            "Повний пакет запуску під ключ коштує 1200$.\n"
-            "Включає рекламу, креативи та аналітику.\n"
-            "Напишіть ваш номер телефону для консультації 📞"
-        )
-        return
-
     if "реклама" in text_lower:
         await update.message.reply_text(
             "Ми запускаємо Meta Ads та Google Ads.\n"
@@ -92,6 +134,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Напишіть, будь ласка, яка у вас ніша і який бюджет на рекламу?"
     )
+    
+# ----- ПСЕВДО AI (якщо нічого не спрацювало) -----
+
+intent = detect_intent(text)
+reply = generate_ai_response(intent)
+await update.message.reply_text(reply)
+return
 
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     users = get_all_users()
