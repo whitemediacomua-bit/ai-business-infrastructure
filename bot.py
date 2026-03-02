@@ -13,6 +13,8 @@ from telegram.ext import (
 from database import create_table, add_user, get_all_users
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
+user_data = {}
+ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
 create_table()
 
@@ -32,6 +34,42 @@ def detect_intent(text):
         return "start"
 
     return "general"
+    
+
+def analyze_intent(text):
+    text = text.lower()
+
+    if any(word in text for word in ["ціна", "скільки", "вартість"]):
+        return "price"
+
+    if any(word in text for word in ["хочу", "потрібно", "замовити"]):
+        return "ready"
+
+    if any(word in text for word in ["думаю", "поки що", "цікаво"]):
+        return "doubt"
+
+    if any(word in text for word in ["аудит"]):
+        return "audit"
+
+    return "other"
+
+
+def calculate_score(user):
+    score = 0
+
+    if user.get("budget_value", 0) >= 1000:
+        score += 5
+
+    if user.get("intent") == "ready":
+        score += 5
+
+    if user.get("intent") == "price":
+        score += 2
+
+    if user.get("intent") == "doubt":
+        score -= 2
+
+    return score
 
 
 def generate_ai_response(intent):
@@ -39,7 +77,9 @@ def generate_ai_response(intent):
     responses = {
         "price": [
             "Повний пакет запуску під ключ — 1200$.\nВключає рекламу, креативи та аналітику.",
-            "Базовий запуск стартує від 100$. Хочете підберемо варіант під вас?"
+            "Базовий запуск стартує від 75$. Хочете підберемо варіант під вас?"
+            
+            "Базовий запуск від 100$.\nБільше кейсів тут 👉 https://t.me/marketing_whitemedia_com_ua
         ],
 
         "ads": [
@@ -54,7 +94,7 @@ def generate_ai_response(intent):
 
         "start": [
             "Супер 👌 Розкажіть про вашу нішу.",
-            "Яка ваша основна ціль зараз?"
+         "Яка ваша основна ціль зараз?"
         ],
 
         "general": [
@@ -90,6 +130,60 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
 
+    user_id = update.message.from_user.id
+text = update.message.text
+    if user_id not in user_data:
+        user_data[user_id] = {}
+
+    intent = analyze_intent(text)
+    user_data[user_id]["intent"] = intent
+
+    # Аналіз бюджету
+    import re
+    numbers = re.findall(r'\d+', text)
+    if numbers:
+        budget = int(numbers[0])
+        user_data[user_id]["budget_value"] = budget
+
+    score = calculate_score(user_data[user_id])
+
+    # 🔥 ГАРЯЧИЙ ЛІД
+    if score >= 7:
+        await update.message.reply_text(
+            "🔥 Бачу, що ви готові до серйозного масштабування.\n"
+            "Пропоную обговорити стратегію персонально."
+        )
+
+        await context.bot.send_message(
+            ADMIN_ID,
+            f"🔥 HOT LEAD\nID: {user_id}\nДані: {user_data[user_id]}"
+        )
+        return
+
+    app.run_polling()
+
+    # 💰 Питає ціну
+    if intent == "price":
+        await update.message.reply_text(
+            "Вартість залежить від ніші та цілей.\n"
+            "Який у вас місячний бюджет на рекламу?"
+        )
+        return
+
+    # 🤔 Сумнівається
+    if intent == "doubt":
+        await update.message.reply_text(
+            "Розумію 🙌\n"
+            "Ось приклад: наш клієнт у сфері бʼюті збільшив заявки на 240% за 2 місяці.\n"
+            "Чи розглядаєте запуск у найближчий місяць?"
+        )
+        return
+
+    # Інше
+    await update.message.reply_text(
+        "Розкажіть більше про ваш бізнес і ціль реклами."
+    )
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
@@ -123,7 +217,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text_lower = text.lower()
 
-    if "реклама" in text_lower:
+    intent = analyze_intent(text)
+if intent == "price":
+if intent == "ready":
+if intent == "doubt":
         await update.message.reply_text(
             "Ми запускаємо Meta Ads та Google Ads.\n"
             "Працюємо під ключ з аналітикою та оптимізацією.\n"
@@ -134,13 +231,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Напишіть, будь ласка, яка у вас ніша і який бюджет на рекламу?"
     )
-    
-# ----- ПСЕВДО AI (якщо нічого не спрацювало) -----
-
-intent = detect_intent(text)
-reply = generate_ai_response(intent)
-await update.message.reply_text(reply)
-return
 
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     users = get_all_users()
@@ -158,7 +248,7 @@ app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("broadcast", broadcast))
-
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-app.run_polling(drop_pending_updates=True)
+if name == "__main__":
+    app.run_polling(drop_pending_updates=True)
