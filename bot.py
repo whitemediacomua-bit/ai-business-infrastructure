@@ -77,6 +77,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     text = update.message.text
 
+
+    
+
     # === BASIC MENU RESPONSES ===
     if text == "🚀 Консультація":
         await update.message.reply_text("Напишіть ваш номер телефону 📞")
@@ -105,6 +108,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Save user state
     if user_id not in user_data:
         user_data[user_id] = {}
+
+
+
+    
     user_data[user_id]["intent"] = intent
 
     # Budget extraction
