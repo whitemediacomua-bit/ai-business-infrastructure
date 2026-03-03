@@ -47,6 +47,50 @@ def calculate_score(user):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     add_user(user.id, user.username)
+    
+async def audit(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+🔍 Аналіз бізнесу
+
+Опишіть:
+• нішу
+• місто / країну
+• середній чек
+• чи є реклама зараз
+
+Я зроблю розбір і покажу точки росту.
+""")
+
+async def offer(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+💎 Створення оферу
+
+Напишіть:
+• ваш продукт
+• цільову аудиторію
+• головну проблему клієнта
+
+Я сформую сильний продаючий офер.
+""")
+
+async def ideas(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+🚀 Ідеї зростання
+
+Напишіть нішу — я дам 5 стратегій масштабування.
+""")
+
+async def ads(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+📈 Реклама
+
+Я працюю з:
+• Meta Ads
+• Google Ads
+• TikTok Ads
+
+Напишіть бюджет і нішу — підкажу стратегію запуску.
+""")
 
     keyboard = [
         ["🚀 Консультація"],
@@ -166,6 +210,11 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("audit", audit))
+app.add_handler(CommandHandler("offer", offer))
+app.add_handler(CommandHandler("ideas", ideas))
+app.add_handler(CommandHandler("ads", ads))
+
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
