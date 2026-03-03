@@ -169,5 +169,5 @@ app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-if _ _name_ _ = "_ _main_ _":
+if __name__ = "__main__":
     app.run_polling(drop_pending_updates=True)
