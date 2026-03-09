@@ -212,14 +212,26 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # --- BROADCAST ---
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # тільки адміністратор може робити розсилку
+    if update.effective_user.id != ADMIN_ID:
+        await update.message.reply_text("❌ У вас немає доступу")
+        return
     users = get_all_users()
     message = " ".join(context.args)
+    if not message:
+        await update.message.reply_text("Напишіть текст після команди")
+        return
+    sent = 0
     for user in users:
         try:
-            await context.bot.send_message(chat_id=user[0], text=message)
+            await context.bot.send_message(
+                chat_id=user[0],
+                text=message
+            )
+            sent += 1
         except:
             pass
-    await update.message.reply_text("📤 Розсилка завершена ✅")
+    await update.message.reply_text(f"📤 Відправлено {sent} користувачам")
 
 # --- SETUP & RUN ---
 app = ApplicationBuilder().token(TOKEN).build()
