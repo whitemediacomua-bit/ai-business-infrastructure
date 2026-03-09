@@ -1,5 +1,6 @@
 import os
 import random
+from ai.ai import ai_audit
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Update, ReplyKeyboardMarkup
 from telegram.ext import (
@@ -140,8 +141,16 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if text == "🎁 Безкоштовний аудит":
-        await update.message.reply_text("Напишіть 'аудит' і я зроблю розбір.")
-        return
+         await update.message.reply_text(
+        "Опишіть ваш бізнес:\n\n"
+        "• нішу\n"
+        "• місто\n"
+        "• середній чек\n"
+        "• чи є реклама"
+    )
+
+    context.user_data["waiting_audit"] = True
+    return
 
     # === TEXT INTENT PROCESSING ===
     intent = analyze_intent(text)
