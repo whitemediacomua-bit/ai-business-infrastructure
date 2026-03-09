@@ -121,6 +121,12 @@ user_data = {}
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     text = update.message.text
+    if context.user_data.get("waiting_audit"):
+        await update.message.reply_text("🔎 Аналізую бізнес...")
+        result = ai_audit(text)
+        await update.message.reply_text(result)
+    context.user_data["waiting_audit"] = False
+        return
 
     # === BASIC MENU RESPONSES ===
     if text == "🚀 Консультація":
