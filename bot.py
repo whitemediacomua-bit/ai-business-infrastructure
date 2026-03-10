@@ -71,30 +71,47 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["waiting_audit"] = False
         return
 
+    # --- Кнопки меню ---
+    if text == "🧾 AI‑Аудит бізнесу":
+        await update.message.reply_text(
+            "🧾 Опишіть ваш бізнес:\n• Ніша\n• Місто\n• Середній чек\n• Чи є реклама\n\nЯ зроблю розбір і покажу точки росту."
+        )
+        context.user_data["waiting_audit"] = True
+        return
+
     if text == "💎 AI‑Офер":
-        await update.message.reply_text("💎 Напишіть ваш продукт, цільову аудиторію та головну проблему клієнта — я сформую сильний продажний офер.")
+        await update.message.reply_text(
+            "💎 Напишіть ваш продукт, цільову аудиторію та головну проблему клієнта — я сформую сильний продажний офер."
+        )
         return
 
     if text == "📈 AI‑Ідеї росту":
-        await update.message.reply_text("📈 Напишіть нішу — я дам 5 стратегій масштабування.")
+        await update.message.reply_text(
+            "📈 Напишіть нішу — я дам 5 стратегій масштабування."
+        )
         return
 
     if text == "📢 AI‑Реклама":
-        await update.message.reply_text("📢 Я працюю з:\n• Meta Ads\n• Google Ads\n• TikTok Ads\n\nНапишіть бюджет і нішу — підкажу стратегію запуску.")
+        await update.message.reply_text(
+            "📢 Я працюю з:\n• Meta Ads\n• Google Ads\n• TikTok Ads\n\nНапишіть бюджет і нішу — підкажу стратегію запуску."
+        )
         return
 
     if text == "🤖 AI‑Автоворонка":
-        await update.message.reply_text("🤖 Я створю AI‑автоворонку: збір лідів, прогрів, комерційна пропозиція та автоматична розсилка.")
+        await update.message.reply_text(
+            "🤖 Я створю AI‑автоворонку: збір лідів, прогрів, комерційна пропозиція та автоматична розсилка."
+        )
         return
 
     if text == "💬 Консультація":
-        await update.message.reply_text("💬 Напишіть ваш номер телефону 📞 — ми звʼяжемося для персональної консультації.")
+        await update.message.reply_text("📞 Напишіть ваш номер телефону — ми звʼяжемося для персональної консультації.")
         return
 
     if text == "💸 Ціни":
         await update.message.reply_text("💸 Вартість від 100$. Деталі на консультації.")
         return
 
+    # --- Якщо нічого не співпало ---
     await update.message.reply_text("Розкажіть більше про ваш бізнес і ціль реклами.")
 
 # --- RUN ---
