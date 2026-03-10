@@ -23,11 +23,10 @@ def create_table():
 def add_user(telegram_id, username):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO users (telegram_id, username)
-        VALUES (%s, %s)
-        ON CONFLICT (telegram_id) DO NOTHING;
-    """, (telegram_id, username))
+    cur.execute(
+        "INSERT INTO users (telegram_id, username) VALUES (%s, %s) ON CONFLICT (telegram_id) DO NOTHING;",
+        (telegram_id, username)
+    )
     conn.commit()
     cur.close()
     conn.close()
