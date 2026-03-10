@@ -1,218 +1,48 @@
 import os
-import random
+import re
 from ai.ai import ai_audit
-
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Update, ReplyKeyboardMarkup
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    MessageHandler,
-    filters,
-    ContextTypes,
-)
-
+from telegram import ReplyKeyboardMarkup, Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, add_user, get_all_users
 
-# --- ENV ---
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
 create_table()
+user_data = {}
 
-# --- INTENT ANALYSIS ---
-def analyze_intent(text):
-    text = text.lower()
-    if any(word in text for word in ["ціна", "скільки", "вартість"]):
-        return "price"
-    if any(word in text for word in ["хочу", "потрібно", "замовити"]):
-        return "ready"
-    if any(word in text for word in ["думаю", "поки що", "цікаво"]):
-        return "doubt"
-    if any(word in text for word in ["аудит"]):
-        return "audit"
-    return "other"
-
-def calculate_score(user):
-    score = 0
-    if user.get("budget_value", 0) >= 1000:
-        score += 5
-    if user.get("intent") == "ready":
-        score += 5
-    if user.get("intent") == "price":
-        score += 2
-    if user.get("intent") == "doubt":
-        score -= 2
-    return score
-
-# --- START / MENU ---
+# --- START ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     add_user(user.id, user.username)
-    
-async def audit(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("""
-🔍 Аналіз бізнесу
-
-Опишіть:
-• нішу
-• місто / країну
-• середній чек
-• чи є реклама зараз
-
-Я зроблю розбір і покажу точки росту.
-""")
-
-async def offer(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("""
-💎 Створення оферу
-
-Напишіть:
-• ваш продукт
-• цільову аудиторію
-• головну проблему клієнта
-
-Я сформую сильний продаючий офер.
-""")
-
-async def ideas(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("""
-🚀 Ідеї зростання
-
-Напишіть нішу — я дам 5 стратегій масштабування.
-""")
-
-async def ads(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("""
-📈 Реклама
-
-Я працюю з:
-• Meta Ads
-• Google Ads
-• TikTok Ads
-
-Напишіть бюджет і нішу — підкажу стратегію запуску.
-""")
-
     keyboard = [
-        ["🚀 Консультація"],
-        ["📋 Послуги"],
-        ["💰 Ціни"],
-        ["🎁 Безкоштовний аудит"]
+        ["🧾 AI‑Аудит бізнесу"],
+        ["💎 AI‑Офер"],
+        ["📈 AI‑Ідеї росту"],
+        ["📢 AI‑Реклама"],
+        ["🤖 AI‑Автоворонка"],
+        ["💬 Консультація"],
+        ["💸 Ціни"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
-    website_button = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🌐 Перейти на сайт", url="https://whitemedia.com.ua/")]
-    ])
-
     await update.message.reply_text(
-        "Вітаю! Я AI-консультант для бізнесу 🚀 або перейдіть на сайт:",
-        reply_markup=website_button
+        "Вітаю 👋 Я ваш AI‑маркетолог.\n\n"
+        "Я допомагаю бізнесу отримувати клієнтів через рекламу та штучний інтелект.\n\n"
+        "Оберіть дію:", reply_markup=reply_markup
     )
 
+# --- AUDIT ---
+async def audit(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Вітаю 👋\nЯ допомагаю бізнесу отримувати клієнтів через рекламу та AI.\n\nОберіть, що вас цікавить:",
-        reply_markup=reply_markup
+        "🧾 AI‑Аудит бізнесу\n\n"
+        "Опишіть ваш бізнес:\n"
+        "• Ніша\n• Місто\n• Середній чек\n• Чи є реклама\n\n"
+        "Я зроблю розбір і покажу точки росту."
     )
-
-# --- MESSAGE HANDLER ---
-user_data = {}
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-    text = update.message.text
-    if context.user_data.get("waiting_audit"):
-        await update.message.reply_text("🔎 Аналізую бізнес...")
-        result = ai_audit(text)
-        await update.message.reply_text(result)
-    context.user_data["waiting_audit"] = False
-        return
-
-    # === BASIC MENU RESPONSES ===
-    if text == "🚀 Консультація":
-        await update.message.reply_text("Напишіть ваш номер телефону 📞")
-        return
-
-    if text == "📋 Послуги":
-        await update.message.reply_text(
-            "• Meta Ads\n• Google Ads\n• AI-боти для бізнесу\n"
-            "• Автоворонки продажів\n• Текстові креативи\n"
-            "• Візуальні креативи\n• Стратегія запуску\n"
-            "• Аудит реклами\n• Налаштування аналітики"
-        )
-        return
-
-    if text == "💰 Ціни":
-        await update.message.reply_text("Від 100$. Деталі на консультації.")
-        return
-
-    if text == "🎁 Безкоштовний аудит":
-         await update.message.reply_text(
-        "Опишіть ваш бізнес:\n\n"
-        "• нішу\n"
-        "• місто\n"
-        "• середній чек\n"
-        "• чи є реклама"
-    )
-
     context.user_data["waiting_audit"] = True
-    return
-
-    # === TEXT INTENT PROCESSING ===
-    intent = analyze_intent(text)
-
-    # Save user state
-    if user_id not in user_data:
-        user_data[user_id] = {}
-    user_data[user_id]["intent"] = intent
-
-    # Budget extraction
-    import re
-    numbers = re.findall(r"\d+", text)
-    if numbers:
-        budget = int(numbers[0])
-        user_data[user_id]["budget_value"] = budget
-
-    score = calculate_score(user_data[user_id])
-
-    # --- HOT LEAD ---
-    if score >= 7:
-        await update.message.reply_text(
-            "🔥 Бачу, що ви готові до серйозного масштабування.\n"
-            "Пропоную обговорити стратегію персонально."
-        )
-
-        await context.bot.send_message(
-            ADMIN_ID,
-            f"🔥 HOT LEAD\nID: {user_id}\nДані: {user_data[user_id]}"
-        )
-        return
-
-    # --- PRICE INTENT ---
-    if intent == "price":
-        await update.message.reply_text(
-            "Вартість залежить від ніші та цілей.\n"
-            "Який у вас місячний бюджет на рекламу?"
-        )
-        return
-
-    # --- DOUBT INTENT ---
-    if intent == "doubt":
-        await update.message.reply_text(
-            "Розумію 🤔\n"
-            "Ось приклад: наш клієнт у сфері бʼюті збільшив заявки на 240% за 2 місяці.\n"
-            "Чи розглядаєте запуск у найближчий місяць?"
-        )
-        return
-
-    # --- OTHER ---
-    await update.message.reply_text(
-        "Розкажіть більше про ваш бізнес і ціль реклами."
-    )
 
 # --- BROADCAST ---
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # тільки адміністратор може робити розсилку
     if update.effective_user.id != ADMIN_ID:
         await update.message.reply_text("❌ У вас немає доступу")
         return
@@ -224,26 +54,55 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sent = 0
     for user in users:
         try:
-            await context.bot.send_message(
-                chat_id=user[0],
-                text=message
-            )
+            await context.bot.send_message(chat_id=user[0], text=message)
             sent += 1
         except:
             pass
-    await update.message.reply_text(f"📤 Відправлено {sent} користувачам")
+    await update.message.reply_text(f"👥 Відправлено {sent} користувачам")
 
-# --- SETUP & RUN ---
+# --- HANDLE ---
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+
+    if context.user_data.get("waiting_audit"):
+        await update.message.reply_text("🔍 Аналізую бізнес...")
+        result = ai_audit(text)
+        await update.message.reply_text(result)
+        context.user_data["waiting_audit"] = False
+        return
+
+    if text == "💎 AI‑Офер":
+        await update.message.reply_text("💎 Напишіть ваш продукт, цільову аудиторію та головну проблему клієнта — я сформую сильний продажний офер.")
+        return
+
+    if text == "📈 AI‑Ідеї росту":
+        await update.message.reply_text("📈 Напишіть нішу — я дам 5 стратегій масштабування.")
+        return
+
+    if text == "📢 AI‑Реклама":
+        await update.message.reply_text("📢 Я працюю з:\n• Meta Ads\n• Google Ads\n• TikTok Ads\n\nНапишіть бюджет і нішу — підкажу стратегію запуску.")
+        return
+
+    if text == "🤖 AI‑Автоворонка":
+        await update.message.reply_text("🤖 Я створю AI‑автоворонку: збір лідів, прогрів, комерційна пропозиція та автоматична розсилка.")
+        return
+
+    if text == "💬 Консультація":
+        await update.message.reply_text("💬 Напишіть ваш номер телефону 📞 — ми звʼяжемося для персональної консультації.")
+        return
+
+    if text == "💸 Ціни":
+        await update.message.reply_text("💸 Вартість від 100$. Деталі на консультації.")
+        return
+
+    await update.message.reply_text("Розкажіть більше про ваш бізнес і ціль реклами.")
+
+# --- RUN ---
 app = ApplicationBuilder().token(TOKEN).build()
-
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("audit", audit))
-app.add_handler(CommandHandler("offer", offer))
-app.add_handler(CommandHandler("ideas", ideas))
-app.add_handler(CommandHandler("ads", ads))
-
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-if __name__ == "__main__":
+if name == "__main__":
     app.run_polling(drop_pending_updates=True)
