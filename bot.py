@@ -1,7 +1,6 @@
 import os
-import re
 from ai.ai import ai_audit
-from telegram import ReplyKeyboardMarkup, Update
+from telegram import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, add_user, get_all_users
 
@@ -15,6 +14,7 @@ user_data = {}
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     add_user(user.id, user.username)
+
     keyboard = [
         ["🧾 AI‑Аудит бізнесу"],
         ["💎 AI‑Офер"],
@@ -25,21 +25,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ["💸 Ціни"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+    website_button = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🌐 Перейти на сайт WhiteMedia", url="https://whitemedia.com.ua/")]
+    ])
+
     await update.message.reply_text(
         "Вітаю 👋 Я ваш AI‑маркетолог.\n\n"
         "Я допомагаю бізнесу отримувати клієнтів через рекламу та штучний інтелект.\n\n"
-        "Оберіть дію:", reply_markup=reply_markup
+        "Оберіть дію нижче або відвідайте наш сайт:",
+        reply_markup=website_button
     )
 
-# --- AUDIT ---
-async def audit(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🧾 AI‑Аудит бізнесу\n\n"
-        "Опишіть ваш бізнес:\n"
-        "• Ніша\n• Місто\n• Середній чек\n• Чи є реклама\n\n"
-        "Я зроблю розбір і покажу точки росту."
-    )
-    context.user_data["waiting_audit"] = True
+    await update.message.reply_text("📋 Меню:", reply_markup=reply_markup)
 
 # --- BROADCAST ---
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -64,6 +62,35 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
+    if text == "🧾 AI‑Аудит бізнесу":
+        await update.message.reply_text("🔍 Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.")
+        context.user_data["waiting_audit"] = True
+        return
+
+    if text == "💎 AI‑Офер":
+        await update.message.reply_text("💎 Напишіть продукт, цільову аудиторію та головну проблему клієнта.")
+        return
+
+    if text == "📈 AI‑Ідеї росту":
+        await update.message.reply_text("📈 Напишіть нішу — я дам 5 стратегій масштабування.")
+        return
+
+    if text == "📢 AI‑Реклама":
+        await update.message.reply_text("📢 Я працюю з Meta Ads, Google Ads, TikTok Ads.\nНапишіть бюджет і нішу.")
+        return
+
+    if text == "🤖 AI‑Автоворонка":
+        await update.message.reply_text("🤖 Я створю AI‑автоворонку: збір лідів, прогрів, комерційна пропозиція та розсилка.")
+        return
+
+    if text == "💬 Консультація":
+        await update.message.reply_text("📞 Напишіть ваш номер телефону — ми звʼяжемося.\nАбо телефонуйте напряму: +380671902929")
+        return
+
+    if text == "💸 Ціни":
+        await update.message.reply_text("💸 Вартість від 100$. Деталі на консультації.")
+        return
+
     if context.user_data.get("waiting_audit"):
         await update.message.reply_text("🔍 Аналізую бізнес...")
         result = ai_audit(text)
@@ -71,55 +98,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["waiting_audit"] = False
         return
 
-    # --- Кнопки меню ---
-    if text == "🧾 AI‑Аудит бізнесу":
-        await update.message.reply_text(
-            "🧾 Опишіть ваш бізнес:\n• Ніша\n• Місто\n• Середній чек\n• Чи є реклама\n\nЯ зроблю розбір і покажу точки росту."
-        )
-        context.user_data["waiting_audit"] = True
-        return
-
-    if text == "💎 AI‑Офер":
-        await update.message.reply_text(
-            "💎 Напишіть ваш продукт, цільову аудиторію та головну проблему клієнта — я сформую сильний продажний офер."
-        )
-        return
-
-    if text == "📈 AI‑Ідеї росту":
-        await update.message.reply_text(
-            "📈 Напишіть нішу — я дам 5 стратегій масштабування."
-        )
-        return
-
-    if text == "📢 AI‑Реклама":
-        await update.message.reply_text(
-            "📢 Я працюю з:\n• Meta Ads\n• Google Ads\n• TikTok Ads\n\nНапишіть бюджет і нішу — підкажу стратегію запуску."
-        )
-        return
-
-    if text == "🤖 AI‑Автоворонка":
-        await update.message.reply_text(
-            "🤖 Я створю AI‑автоворонку: збір лідів, прогрів, комерційна пропозиція та автоматична розсилка."
-        )
-        return
-
-    if text == "💬 Консультація":
-        await update.message.reply_text("📞 Напишіть ваш номер телефону — ми звʼяжемося для персональної консультації.")
-        return
-
-    if text == "💸 Ціни":
-        await update.message.reply_text("💸 Вартість від 100$. Деталі на консультації.")
-        return
-
-    # --- Якщо нічого не співпало ---
     await update.message.reply_text("Розкажіть більше про ваш бізнес і ціль реклами.")
 
 # --- RUN ---
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("audit", audit))
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-if __name__ == "__main__":
+if name == "__main__":
     app.run_polling(drop_pending_updates=True)
