@@ -104,5 +104,5 @@ app.add_handler(CommandHandler("audit", audit))
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-if name == "__main__":
+if __name__ == "__main__":
     app.run_polling(drop_pending_updates=True)
