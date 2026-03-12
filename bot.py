@@ -69,6 +69,7 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
+    # --- Кнопки ---
     if text == "🧾 AI‑Аудит бізнесу":
         await update.message.reply_text("🔍 Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.")
         context.user_data["waiting_audit"] = True
@@ -98,9 +99,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("💸 Вартість від 100$. Деталі на консультації.")
         return
 
+    # --- Аудит бізнесу ---
     if context.user_data.get("waiting_audit"):
         await update.message.reply_text("🔍 Аналізую бізнес...")
-        result = ai_audit(text)
+        result = ai_audit(text)   # виклик OpenAI
         await update.message.reply_text(result)
         context.user_data["waiting_audit"] = False
         return
