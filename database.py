@@ -1,23 +1,33 @@
-import sqlite3
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, sessionmaker
+import os
+
+# Використовуємо DATABASE_URL з Railway
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
+Base = declarative_base()
+SessionLocal = sessionmaker(bind=engine)
+
+class User(Base):
+    tablename = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, nullable=True)
 
 def create_table():
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT)")
-    conn.commit()
-    conn.close()
+    Base.metadata.create_all(bind=engine)
 
 def add_user(user_id, username):
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute("INSERT OR IGNORE INTO users (id, username) VALUES (?, ?)", (user_id, username))
-    conn.commit()
-    conn.close()
+    session = SessionLocal()
+    user = session.query(User).filter(User.id == user_id).first()
+    if not user:
+        new_user = User(id=user_id, username=username)
+        session.add(new_user)
+        session.commit()
+    session.close()
 
 def get_all_users():
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute("SELECT id FROM users")
-    users = c.fetchall()
-    conn.close()
-    return users
+    session = SessionLocal()
+    users = session.query(User).all()
+    session.close()
+    return [(u.id, u.username) for u in users]
