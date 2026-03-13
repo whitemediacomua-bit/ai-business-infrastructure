@@ -1,19 +1,5 @@
-import os
-from openai import OpenAI
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 def ai_audit(text):
-    prompt = f"""
-    Ти маркетинговий експерт.
-    Проаналізуй бізнес і дай:
-    1. головну проблему
-    2. 3 точки росту
-    3. ідею реклами
-    Бізнес: {text}
-    """
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.choices[0].message.content
+    return f"📊 Аналіз бізнесу:\n- Ніша: {text}\n- Точки росту: клієнти, реклама, масштабування.\n(У безкоштовній версії відповіді обмежені)"
+
+def copilot_answer(text):
+    return f"🤖 Copilot‑відповідь:\nВи запитали: {text}\nОсь моя професійна порада: сфокусуйтеся на клієнтах, рекламі та автоматизації процесів."
