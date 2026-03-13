@@ -1,41 +1,23 @@
-import psycopg2
-import os
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-def get_connection():
-    return psycopg2.connect(DATABASE_URL)
+import sqlite3
 
 def create_table():
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            telegram_id BIGINT UNIQUE,
-            username TEXT
-        );
-    """)
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT)")
     conn.commit()
-    cur.close()
     conn.close()
 
-def add_user(telegram_id, username):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO users (telegram_id, username) VALUES (%s, %s) ON CONFLICT (telegram_id) DO NOTHING;",
-        (telegram_id, username)
-    )
+def add_user(user_id, username):
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("INSERT OR IGNORE INTO users (id, username) VALUES (?, ?)", (user_id, username))
     conn.commit()
-    cur.close()
     conn.close()
 
 def get_all_users():
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT telegram_id FROM users;")
-    users = cur.fetchall()
-    cur.close()
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT id FROM users")
+    users = c.fetchall()
     conn.close()
     return users
