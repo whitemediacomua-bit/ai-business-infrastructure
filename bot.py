@@ -119,7 +119,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("⚠️ Помилка при генерації відповіді. Перевірте OPENAI_API_KEY.")
 
 # --- RUN ---
-app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
