@@ -14,10 +14,10 @@ class User(Base):
     telegram_id = Column(Integer, unique=True, index=True)
     username = Column(String, nullable=True)
 
-def create_table():
+def    create_table():
     Base.metadata.create_all(bind=engine)
 
-def add_user(user_id, username):
+def    add_user(user_id, username):
     session = SessionLocal()
     user = session.query(User).filter(User.telegram_id == user_id).first()
     if not user:
@@ -26,7 +26,7 @@ def add_user(user_id, username):
         session.commit()
     session.close()
 
-def get_all_users():
+def    get_all_users():
     session = SessionLocal()
     users = session.query(User).all()
     session.close()
