@@ -1,5 +1,5 @@
 import os
-from ai.ai import ai_audit, copilot_answer
+from ai.ai import ai_audit, ai_answer
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, add_user, get_all_users
@@ -10,7 +10,6 @@ ADMIN_ID = int(os.getenv("ADMIN_ID"))
 create_table()
 user_data = {}
 
-# --- START ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     add_user(user.id, user.username)
@@ -36,7 +35,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
 
-# --- BROADCAST ---
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         await update.message.reply_text("❌ У вас немає доступу")
@@ -55,89 +53,28 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pass
     await update.message.reply_text(f"👥 Відправлено {sent} користувачам")
 
-# --- HANDLE ---
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
     if text == "🧾 AI‑Аудит бізнесу":
-        await update.message.reply_text(
-            "🔍 AI‑Аудит бізнесу:\n\n"
-            "Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.\n"
-            "Я дам професійний аналіз і покажу точки росту."
-        )
+        await update.message.reply_text("🔍 Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.")
         context.user_data["waiting_audit"] = True
         return
 
-    if text == "💎 AI‑Офер":
-        await update.message.reply_text(
-            "💎 AI‑Офер:\n\n"
-            "Напишіть продукт, цільову аудиторію та головну проблему клієнта.\n"
-            "Я сформую сильний офер, який продає."
-        )
-        return
-
-    if text == "📈 AI‑Ідеї росту":
-        await update.message.reply_text(
-            "📈 AI‑Ідеї росту:\n\n"
-            "Напишіть нішу — я дам 5 стратегій масштабування бізнесу.\n"
-            "Отримаєте конкретні кроки для розвитку."
-        )
-        return
-
-    if text == "📢 AI‑Реклама":
-        await update.message.reply_text(
-            "📢 AI‑Реклама:\n\n"
-            "Я працюю з Meta Ads, Google Ads, TikTok Ads.\n"
-            "Напишіть бюджет і нішу — я дам рекомендації для ефективної реклами."
-        )
-        return
-
-    if text == "🤖 AI‑Автоворонка":
-        await update.message.reply_text(
-            "🤖 AI‑Автоворонка:\n\n"
-            "Я створю AI‑автоворонку: збір лідів, прогрів, комерційна пропозиція та розсилка.\n"
-            "Це автоматизує продажі й підвищить конверсію."
-        )
-        return
-
     if text == "⚙️ Налаштування чат‑бота":
-        await update.message.reply_text(
-            "⚙️ Налаштування чат‑бота:\n\n"
-            "Я допоможу інтегрувати чат‑бота з сайтом, CRM та каналами.\n"
-            "Це зробить ваш бізнес автоматизованим і сучасним."
-        )
+        await update.message.reply_text("⚙️ Я допоможу інтегрувати чат‑бота з сайтом, CRM та каналами.")
         return
 
     if text == "💬 Консультація":
-        await update.message.reply_text(
-            "💬 Консультація:\n\n"
-            "Напишіть ваш номер телефону — ми звʼяжемося.\n"
-            "Або телефонуйте напряму: +380671902929."
-        )
-        return
-
-    if text == "💸 Ціни":
-        await update.message.reply_text(
-            "💸 Ціни:\n\n"
-            "Вартість послуг від 100$. Деталі обговорюємо на консультації.\n"
-            "Я підберу оптимальний пакет для вашого бізнесу."
-        )
+        await update.message.reply_text("📞 Напишіть ваш номер телефону — ми звʼяжемося.\nАбо телефонуйте напряму: +380671902929.")
         return
 
     if text == "📝 Промпт‑менеджер":
-        await update.message.reply_text(
-            "📝 Промпт‑менеджер:\n\n"
-            "Якщо вам потрібна допомога — напишіть: 'Мені потрібна допомога з ...'\n"
-            "Я перетворю це у професійний запит до AI, щоб ви отримали найкращу відповідь."
-        )
+        await update.message.reply_text("📝 Якщо вам потрібна допомога — напишіть: 'Мені потрібна допомога з ...'. Я перетворю це у професійний запит.")
         return
 
     if text == "📞 Звʼязатися з менеджером":
-        await update.message.reply_text(
-            "📞 Звʼязатися з менеджером:\n\n"
-            "Телефон: +380671902929\n"
-            "🌐 Сайт: https://whitemedia.com.ua/"
-        )
+        await update.message.reply_text("📞 Телефон: +380671902929\n🌐 Сайт: https://whitemedia.com.ua/")
         return
 
     if context.user_data.get("waiting_audit"):
@@ -147,8 +84,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["waiting_audit"] = False
         return
 
-    # Copilot відповіді (користувачі не бачать слово Copilot)
-    answer = copilot_answer(text)
+    answer = ai_answer(text)
     await update.message.reply_text(answer)
 
 app = ApplicationBuilder().token(TOKEN).build()
