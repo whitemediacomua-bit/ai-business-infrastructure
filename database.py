@@ -12,7 +12,8 @@ class User(Base):
     telegram_id = Column(Integer, unique=True, index=True)    
     username = Column(String, nullable=True)    
 
-Base.metadata.create_all(bind=engine)
+def create_table():
+    Base.metadata.create_all(bind=engine)    
 
 def add_user(user_id, username):
     Session = sessionmaker(bind=engine)    
