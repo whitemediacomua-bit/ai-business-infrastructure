@@ -11,6 +11,7 @@ SessionLocal = sessionmaker(bind=engine)
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
+    telegram_id = Column(Integer, unique=True, index=True)
     username = Column(String, nullable=True)
 
 def create_table():
@@ -18,9 +19,9 @@ def create_table():
 
 def add_user(user_id, username):
     session = SessionLocal()
-    user = session.query(User).filter(User.id == user_id).first()
+    user = session.query(User).filter(User.telegram_id == user_id).first()
     if not user:
-        new_user = User(id=user_id, username=username)
+        new_user = User(telegram_id=user_id, username=username)
         session.add(new_user)
         session.commit()
     session.close()
@@ -29,4 +30,4 @@ def get_all_users():
     session = SessionLocal()
     users = session.query(User).all()
     session.close()
-    return [(u.id, u.username) for u in users]
+    return [(u.telegram_id, u.username) for u in users]
