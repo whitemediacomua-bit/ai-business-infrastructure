@@ -17,7 +17,7 @@ def ai_answer(text):
         )
         data = response.json()
         if isinstance(data, list) and "generated_text" in data[0]:
-            return "💡 Професійна відповідь:\n" + data[0]["generated_text"]
+            return "💬 Професійна відповідь:\n" + data[0]["generated_text"]
         else:
             return "⚠️ Немає відповіді від моделі. Перевір токен HF_API_KEY."
     except Exception as e:
