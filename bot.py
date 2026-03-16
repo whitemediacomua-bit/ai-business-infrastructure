@@ -114,9 +114,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "📞 Звʼязатися з менеджером":
         await update.message.reply_text(
-
-> Дарья ✌️:
-"📞 Телефон: +380671902929\n🌐 Сайт: https://whitemedia.com.ua/\n\n"
+            "📞 Телефон: +380671902929\n🌐 Сайт: https://whitemedia.com.ua/\n\n"
             "Звертайтесь для консультації!",
             reply_markup=reply_markup
         )
