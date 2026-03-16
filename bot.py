@@ -1,4 +1,3 @@
-> Дарья ✌️:
 import os
 from ai import ai_audit, ai_answer
 from telegram import ReplyKeyboardMarkup, Update
