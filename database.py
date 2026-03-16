@@ -9,6 +9,6 @@ Base = declarative_base()
 SessionLocal = sessionmaker(bind=engine)
 
 class User(Base):
-    tablename = "users"  # ← ОБОВʼЯЗКОВО!
+    __tablename__ = "users"  # ← ОБОВʼЯЗКОВО!
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, nullable=True)
