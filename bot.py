@@ -1,5 +1,5 @@
 import os
-from ai import ai_audit, ai_answer
+from ai.ai import ai_audit, ai_answer
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, add_user, get_all_users
