@@ -1,8 +1,5 @@
 import os, requests
 
-def ai_audit(text):
-    return f"📊 Професійний аудит бізнесу:\n- Ніша: {text}\n- Точки росту: клієнти, реклама, масштабування.\n\nРекомендація: використати AI‑інструменти для залучення нових клієнтів."
-
 def ai_answer(text):
     try:
         response = requests.post(
@@ -11,6 +8,9 @@ def ai_answer(text):
             json={"inputs": text}
         )
         data = response.json()
-        return "💡 Професійна відповідь:\n" + data[0]["generated_text"]
-    except Exception:
-        return "⚠️ Тимчасово немає AI‑відповіді. Перевір токен HF_API_KEY."
+        if isinstance(data, list) and "generated_text" in data[0]:
+            return "💡 Професійна відповідь:\n" + data[0]["generated_text"]
+        else:
+            return "⚠️ Немає відповіді від моделі. Перевір токен HF_API_KEY."
+    except Exception as e:
+        return f"⚠️ Помилка: {str(e)}"
