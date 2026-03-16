@@ -1,10 +1,18 @@
 import os, requests
 
+def ai_audit(text):
+    return (
+        "📊 Професійний аудит бізнесу:\n"
+        f"Ніша: {text}\n"
+        "Точки росту: клієнти, реклама, масштабування.\n\n"
+        "Рекомендація: використати AI‑інструменти для залучення нових клієнтів."
+    )
+
 def ai_answer(text):
     try:
         response = requests.post(
             "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
-            headers={"Authorization": f"Bearer " + os.getenv("HF_API_KEY")},
+            headers={"Authorization": "Bearer " + os.getenv("HF_API_KEY")},
             json={"inputs": text}
         )
         data = response.json()
