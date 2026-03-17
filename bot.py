@@ -18,7 +18,8 @@ keyboard = [
     ["🌐 Розробка сайтів", "⚡ Хостинг"],
     ["📈 AI‑Реклама", "💬 AI‑Чат‑боти"],
     ["📊 Аналітика", "📧 AI‑Розсилки"],
-    ["📝 Промпт‑менеджер", "📞 Звʼязатися з менеджером"]
+    ["🔎 AI‑SEO Оптимізація", "📝 Промпт‑менеджер"],
+    ["📞 Звʼязатися з менеджером"]
 ]
 reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
@@ -127,6 +128,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=reply_markup
         )
         context.user_data["waiting_audit"] = True
+        return
+
+    if text == "🔎 AI‑SEO Оптимізація":
+        add_request(update.effective_user.id, "seo", text)
+        await update.message.reply_text(
+            "🔎 AI‑SEO Оптимізація:\n"
+            "Ми оптимізуємо ваш сайт під пошукові системи за допомогою AI.\n"
+            "Аналіз ключових слів, створення контенту та технічна оптимізація — "
+            "щоб ваш бізнес був на перших позиціях у Google.",
+            reply_markup=reply_markup
+        )
         return
 
     if text == "💌 AI-Розсилки на ID в telegram":
