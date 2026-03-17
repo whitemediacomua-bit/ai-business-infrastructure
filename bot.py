@@ -1,8 +1,11 @@
 import os
-from ai.ai import ai_audit, ai_answer
+from ai.ai import (
+    ai_audit, ai_answer, ai_idea, ai_website, ai_hosting,
+    ai_ads, ai_chatbot, ai_analytics, ai_mailing
+)
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-from database import create_table, add_user, get_all_users
+from database import create_table, add_user, add_request, get_all_users
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
@@ -11,9 +14,10 @@ create_table()
 
 # 🔑 Професійне меню з твоїми послугами
 keyboard = [
-    ["🌐 Розробка сайтів", "☁️ Хостинг"],
-    ["📢 AI‑Реклама", "🤖 Чат‑бот під ключ"],
-    ["📊 AI‑Аудит бізнесу", "💌 Розсилки"],
+    ["📊 AI‑Аудит бізнесу", "💡 AI‑Ідейка"],
+    ["🌐 Розробка сайтів", "⚡ Хостинг"],
+    ["📈 AI‑Реклама", "💬 AI‑Чат‑боти"],
+    ["📊 Аналітика", "📧 AI‑Розсилки"],
     ["📝 Промпт‑менеджер", "📞 Звʼязатися з менеджером"]
 ]
 reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
@@ -49,24 +53,45 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
+    if text == "📊 AI‑Аудит бізнесу":
+        await update.message.reply_text("📊 Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.", reply_markup=reply_markup)
+        context.user_data["waiting_audit"] = True
+        return
+
+    if context.user_data.get("waiting_audit"):
+        await update.message.reply_text("🔍 Аналізую бізнес...", reply_markup=reply_markup)
+        result = ai_audit(text)
+        add_request(update.effective_user.id, "audit", text)
+        await update.message.reply_text(result, reply_markup=reply_markup)
+        context.user_data["waiting_audit"] = False
+        return
+
+    if text == "💡 AI‑Ідейка":
+        add_request(update.effective_user.id, "idea", text)
+        await update.message.reply_text(ai_idea(text), reply_markup=reply_markup)
+        return
+
     if text == "🌐 Розробка сайтів":
-        await update.message.reply_text(
+        add_request(update.effective_user.id, "website", text)
+        await update.message.reply_text(ai_website(text)(
             "🌐 Ми створюємо сучасні сайти з AI‑інтеграцією, які приносять клієнтів.\n"
             "Замовте консультацію вже сьогодні!",
             reply_markup=reply_markup
         )
         return
-
+        
     if text == "☁️ Хостинг":
-        await update.message.reply_text(
+        add_request(update.effective_user.id, "hosting", text)
+        await update.message.reply_text(ai_hosting(text)(
             "☁️ Надійний хостинг та підтримка для вашого бізнесу.\n"
-            "Ваш сайт завжди онлайн.",
+            "Ваш бізнес завжди онлайн.",
             reply_markup=reply_markup
         )
         return
 
     if text == "📢 AI‑Реклама":
-        await update.message.reply_text(
+        add_request(update.effective_user.id, "ads", text)
+        await update.message.reply_text(ai_ads(text)(
             "📢 AI‑реклама допоможе вам отримати більше заявок за менший бюджет.\n"
             "Ми налаштовуємо таргетинг під ключ.",
             reply_markup=reply_markup
@@ -74,29 +99,24 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if text == "🤖 Чат‑бот під ключ":
-        await update.message.reply_text(
+        add_request(update.effective_user.id, "chatbot", text)
+        await update.message.reply_text(ai_chatbot(text)(
             "🤖 Ми створюємо чат‑ботів, які збирають ліди, роблять розсилки та інтегруються з CRM.\n"
             "Ваш бізнес працює на автопілоті.",
             reply_markup=reply_markup
         )
         return
 
-    if text == "📊 AI‑Аудит бізнесу":
-        await update.message.reply_text(
+    if text == "📊 Аналітика":
+        add_request(update.effective_user.id, "analytics", text)
+        await update.message.reply_text(ai_analytics(text)(
             "📊 Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.",
             reply_markup=reply_markup
         )
         context.user_data["waiting_audit"] = True
         return
 
-    if context.user_data.get("waiting_audit"):
-        await update.message.reply_text("🔍 Аналізую бізнес...", reply_markup=reply_markup)
-        result = ai_audit(text)
-        await update.message.reply_text(result, reply_markup=reply_markup)
-        context.user_data["waiting_audit"] = False
-        return
-
-    if text == "💌 Розсилки":
+    if text == "💌 AI-Розсилки на ID в telegram":
         await update.message.reply_text(
             "💌 Ми налаштовуємо автоматичні розсилки для прогріву клієнтів.\n"
             "Ваші клієнти завжди на звʼязку.",
@@ -120,8 +140,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # AI‑відповідь
+    # AI‑відповідь на будь-яке інше повідомлення
     answer = ai_answer(text)
+    add_request(update.effective_user.id, "ask", text)
     await update.message.reply_text(answer, reply_markup=reply_markup)
 
 # 🚀 Запуск
