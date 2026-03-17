@@ -66,7 +66,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.user_data.get("waiting_audit"):
         await update.message.reply_text(
             "🔍 Аналізую бізнес...,
-            reply_markup=reply_markup)
+            reply_markup=reply_markup
+       )
         result = ai_audit(text)
         add_request(update.effective_user.id, "audit", text)
         await update.message.reply_text(result, reply_markup=reply_markup)
