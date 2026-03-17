@@ -83,7 +83,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "🌐 Розробка сайтів":
         add_request(update.effective_user.id, "website", text)
-        await update.message.reply_text(ai_website(text)(
+        await update.message.reply_text(
             "🌐 Ми створюємо сучасні сайти з AI‑інтеграцією, які не просто існують, а реально продають приносять клієнтів.\n"
             "Замовте консультацію вже сьогодні!",
             reply_markup=reply_markup
