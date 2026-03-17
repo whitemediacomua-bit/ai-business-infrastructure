@@ -1,8 +1,5 @@
 import os
-from ai.ai import (
-    ai_audit, ai_answer, ai_idea, ai_website, ai_hosting,
-    ai_ads, ai_chatbot, ai_analytics, ai_mailing, ai_seo
-)
+from ai.ai import ai_audit, ai_answer, ai_idea, ai_website, ai_hosting, ai_ads, ai_chatbot, ai_analytics, ai_mailing, ai_seo
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, add_user, add_request, get_all_users
@@ -57,7 +54,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if text == "📊 AI‑Аудит бізнесу":
         await update.message.reply_text(
             "📊 Ми аналізуємо Вашу нішу, конкурентів та точки росту.\n"
-            "Отримайте готову стратегію розвитку бізнесу за допомогою AI."
+            "Отримайте готову стратегію розвитку бізнесу за допомогою AI.\n"
             "Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.",
             reply_markup=reply_markup
         )
@@ -93,7 +90,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if text == "☁️ Хостинг":
         add_request(update.effective_user.id, "hosting", text)
         await update.message.reply_text(
-            "☁️ Надійний хостинг із AI-моніторингом.\nВаш сайт завжи онлайн,швидкий та захищенний підтримка для вашого бізнесу.",
+            "☁️ Надійний хостинг із AI-моніторингом.\nВаш сайт завжи онлайн, швидкий та захищенний.\n"
+            "Професійна підтримка для Вашого бізнесу.",
             reply_markup=reply_markup
         )
         return
@@ -102,7 +100,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         add_request(update.effective_user.id, "ads", text)
         await update.message.reply_text(
             "📢 AI аналізує аудиторію, створює креативи та оптимізує бюджети.\n"
-            "Вам отримати більше заявок за менший бюджет."
+            "Вам отримати більше заявок за менший бюджет.\n"
             "Ми налаштовуємо таргетинг під ключ.",
             reply_markup=reply_markup
         )
@@ -132,8 +130,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "🔎 AI‑SEO Оптимізація:\n"
             "Ми оптимізуємо ваш сайт під пошукові системи за допомогою AI.\n"
-            "Аналіз ключових слів, створення контенту та технічна оптимізація — "
-            "щоб ваш бізнес був на перших позиціях у Google.",
+            "Аналіз ключових слів, створення контенту та технічна оптимізація.\n"
+            "Щоб Ваш бізнес був на перших позиціях у Google.",
             reply_markup=reply_markup
         )
         return
@@ -142,7 +140,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         add_request(update.effective_user.id, "mailing", text)
         await update.message.reply_text(
             "💌 Ми налаштовуємо автоматичні розсилки для прогріву клієнтів.\n"
-            "Персоналізовані повідомлення для кожного клієнта.\nКонверсія зростає в рази."
+            "Персоналізовані повідомлення для кожного клієнта.\n"
+            "Конверсія зростає в рази.\n"
             "Ваші клієнти завжди на звʼязку.",
             reply_markup=reply_markup
         )
@@ -150,7 +149,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "📝 Промпт‑менеджер":
         await update.message.reply_text(
-            "📝 Ми створюємо професійні AI‑промпти для маркетингу, реклами та контенту.\nВаш бізнес отримує готові інструменти.",
+            "📝 Ми створюємо професійні AI‑промпти для маркетингу, реклами та контенту.\n"
+            "Ваш бізнес отримує готові інструменти.",
             reply_markup=reply_markup
         )
         return
