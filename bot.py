@@ -54,12 +54,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
     if text == "📊 AI‑Аудит бізнесу":
-        await update.message.reply_text("📊 Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.", reply_markup=reply_markup)
+        await update.message.reply_text(
+            "📊 Ми аналізуємо Вашу нішу, конкурентів та точки росту.\n"
+            "Отримайте готову стратегію розвитку бізнесу за допомогою AI."
+            "Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.",
+            reply_markup=reply_markup
+        )
         context.user_data["waiting_audit"] = True
         return
 
     if context.user_data.get("waiting_audit"):
-        await update.message.reply_text("🔍 Аналізую бізнес...", reply_markup=reply_markup)
+        await update.message.reply_text("🔍 Аналізую бізнес..."," reply_markup=reply_markup)
         result = ai_audit(text)
         add_request(update.effective_user.id, "audit", text)
         await update.message.reply_text(result, reply_markup=reply_markup)
@@ -68,13 +73,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "💡 AI‑Ідейка":
         add_request(update.effective_user.id, "idea", text)
-        await update.message.reply_text(ai_idea(text), reply_markup=reply_markup)
+        await update.message.reply_text(
+            "💡 Нейромережа згенерує десятки ідей для контенту, реклами та розвитку бренду.\n"
+            "Ви отримаєте натхнення за хвилини.",
+            reply_markup=reply_markup
+        )
         return
 
     if text == "🌐 Розробка сайтів":
         add_request(update.effective_user.id, "website", text)
         await update.message.reply_text(ai_website(text)(
-            "🌐 Ми створюємо сучасні сайти з AI‑інтеграцією, які приносять клієнтів.\n"
+            "🌐 Ми створюємо сучасні сайти з AI‑інтеграцією, які не просто існують, а реально продають приносять клієнтів.\n"
             "Замовте консультацію вже сьогодні!",
             reply_markup=reply_markup
         )
@@ -82,26 +91,26 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     if text == "☁️ Хостинг":
         add_request(update.effective_user.id, "hosting", text)
-        await update.message.reply_text(ai_hosting(text)(
-            "☁️ Надійний хостинг та підтримка для вашого бізнесу.\n"
-            "Ваш бізнес завжди онлайн.",
+        await update.message.reply_text(
+            "☁️ Надійний хостинг із AI-моніторингом.\nВаш сайт завжи онлайн,швидкий та захищенний підтримка для вашого бізнесу.",
             reply_markup=reply_markup
         )
         return
 
     if text == "📢 AI‑Реклама":
         add_request(update.effective_user.id, "ads", text)
-        await update.message.reply_text(ai_ads(text)(
-            "📢 AI‑реклама допоможе вам отримати більше заявок за менший бюджет.\n"
+        await update.message.reply_text(
+            "📢 AI аналізує аудиторію, створює креативи та оптимізує бюджети.\n"
+            "Вам отримати більше заявок за менший бюджет."
             "Ми налаштовуємо таргетинг під ключ.",
             reply_markup=reply_markup
         )
         return
 
-    if text == "🤖 Чат‑бот під ключ":
+    if text == "🤖 AI-Чат‑бот під ключ":
         add_request(update.effective_user.id, "chatbot", text)
-        await update.message.reply_text(ai_chatbot(text)(
-            "🤖 Ми створюємо чат‑ботів, які збирають ліди, роблять розсилки та інтегруються з CRM.\n"
+        await update.message.reply_text(
+            "🤖 Ми створюємо ботів, які консультують клієнтів, збирають ліди, приймають заявки, продають 24/7, роблять розсилки та інтегруються з CRM.\n"
             "Ваш бізнес працює на автопілоті.",
             reply_markup=reply_markup
         )
@@ -109,16 +118,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "📊 Аналітика":
         add_request(update.effective_user.id, "analytics", text)
-        await update.message.reply_text(ai_analytics(text)(
-            "📊 Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.",
+        await update.message.reply_text(
+            "📊 AI допоможе прогнозуватипродажі,аналізувати данні та показувати Вам повну картину бізнесу.\n"
+            "Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.",
             reply_markup=reply_markup
         )
         context.user_data["waiting_audit"] = True
         return
 
     if text == "💌 AI-Розсилки на ID в telegram":
+        add_request(update.effective_user.id, "mailing", text)
         await update.message.reply_text(
             "💌 Ми налаштовуємо автоматичні розсилки для прогріву клієнтів.\n"
+            "Персоналізовані повідомлення для кожного клієнта.\nКонверсія зростає в рази."
             "Ваші клієнти завжди на звʼязку.",
             reply_markup=reply_markup
         )
@@ -126,16 +138,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "📝 Промпт‑менеджер":
         await update.message.reply_text(
-            "📝 Ми створюємо професійні AI‑промпти для маркетингу, реклами та контенту.\n"
-            "Ваш бізнес отримує готові інструменти.",
+            "📝 Ми створюємо професійні AI‑промпти для маркетингу, реклами та контенту.\nВаш бізнес отримує готові інструменти.",
             reply_markup=reply_markup
         )
         return
 
     if text == "📞 Звʼязатися з менеджером":
         await update.message.reply_text(
-            "📞 Телефон: +380671902929\n🌐 Сайт: https://whitemedia.com.ua/\n\n"
-            "Звертайтесь для консультації!",
+            "📞 Телефон: +380671902929\n🌐 Сайт: https://whitemedia.com.ua/\n\nЗвертайтесь для консультації!",
             reply_markup=reply_markup
         )
         return
