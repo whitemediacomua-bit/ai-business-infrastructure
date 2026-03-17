@@ -1,7 +1,7 @@
 import os
 from ai.ai import (
     ai_audit, ai_answer, ai_idea, ai_website, ai_hosting,
-    ai_ads, ai_chatbot, ai_analytics, ai_mailing, id_seo
+    ai_ads, ai_chatbot, ai_analytics, ai_mailing, ai_seo
 )
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
@@ -64,7 +64,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["waiting_audit"] = True
         return
 
-     if context.user_data.get("waiting_audit"):
+    if context.user_data.get("waiting_audit"):
         await update.message.reply_text("🔍 Аналізую бізнес...", reply_markup=reply_markup)
         result = ai_audit(text)
         add_request(update.effective_user.id, "audit", text)
