@@ -14,7 +14,7 @@ keyboard = [
     ["📊 AI‑Аудит бізнесу", "💡 AI‑Ідейка"],
     ["🌐 Розробка сайтів", "☁️ Хостинг"],
     ["📈 AI‑Реклама", "💬 AI‑Чат‑боти"],
-    ["📊 Аналітика", "📧 AI‑Розсилки"],
+    ["📊 AI-Аналітика", "📧 AI‑Розсилки"],
     ["🔎 AI‑SEO Оптимізація", "📝 Промпт‑менеджер"],
     ["📞 Звʼязатися з менеджером", "📦 Комерційна пропозиція"]
 ]
@@ -115,8 +115,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if text == "📊 Аналітика":
-        add_request(update.effective_user.id, "analytics", text)
+    if text == "📊 AI-Аналітика":
+        add_request(update.effective_user.id, "ai_analytics", text)
         await update.message.reply_text(
             "📊 AI допоможе прогнозуватипродажі,аналізувати данні та показувати Вам повну картину бізнесу.\n"
             "Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.",
