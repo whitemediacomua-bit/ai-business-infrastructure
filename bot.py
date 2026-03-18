@@ -96,10 +96,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if text == "📢 AI‑Реклама":
+    if text == "📈 AI‑Реклама":
         add_request(update.effective_user.id, "ads", text)
         await update.message.reply_text(
-            "📢 AI аналізує аудиторію, створює креативи та оптимізує бюджети.\n"
+            "📈 AI аналізує аудиторію, створює креативи та оптимізує бюджети.\n"
             "Вам отримати більше заявок за менший бюджет.\n"
             "Ми налаштовуємо таргетинг під ключ.",
             reply_markup=reply_markup
