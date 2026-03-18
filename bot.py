@@ -136,10 +136,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if text == "💌 AI-Розсилки на ID в telegram":
+    if text == "📧 AI‑Розсилки":
         add_request(update.effective_user.id, "mailing", text)
         await update.message.reply_text(
-            "💌 Ми налаштовуємо автоматичні розсилки для прогріву клієнтів.\n"
+            "📧 Ми налаштовуємо автоматичні розсилки для прогріву клієнтів.\n"
             "Персоналізовані повідомлення для кожного клієнта.\n"
             "Конверсія зростає в рази.\n"
             "Ваші клієнти завжди на звʼязку.",
