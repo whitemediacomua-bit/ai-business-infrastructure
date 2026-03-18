@@ -16,7 +16,7 @@ keyboard = [
     ["📈 AI‑Реклама", "💬 AI‑Чат‑боти"],
     ["📊 Аналітика", "📧 AI‑Розсилки"],
     ["🔎 AI‑SEO Оптимізація", "📝 Промпт‑менеджер"],
-    ["📞 Звʼязатися з менеджером"]
+    ["📞 Звʼязатися з менеджером", "📦 Комерційна пропозиція"]
 ]
 reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
@@ -145,6 +145,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Ваші клієнти завжди на звʼязку.",
             reply_markup=reply_markup
         )
+        return
+
+    if text == "📦 Комерційна пропозиція":
+        await update.message.reply_text(commercial_offer(), reply_markup=reply_markup)
         return
 
     if text == "📝 Промпт‑менеджер":
