@@ -148,6 +148,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if text == "📦 Комерційна пропозиція":
+        add_request(update.effective_user.id, "commercial-offer", text)
         await update.message.reply_text(
             "📦 Пакет послуг WhiteMedia — AI‑маркетинг для бізнесу:\n\n"
             "📊 AI‑Аудит бізнесу — аналіз ніші, конкурентів та стратегія розвитку.\n"
