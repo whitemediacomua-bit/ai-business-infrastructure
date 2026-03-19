@@ -11,13 +11,13 @@ Base = declarative_base()
 
 # 📋 Модель таблиці користувачів
 class User(Base):
-    tablename = "users"
+    __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String)
 
 # 📋 Модель таблиці запитів
 class Request(Base):
-    tablename = "requests"
+    __tablename__ = "requests"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
     command = Column(String)
@@ -25,7 +25,7 @@ class Request(Base):
 
 # 📋 Модель таблиці аудитів
 class Audit(Base):
-    tablename = "audits"
+    __tablename__ = "audits"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
     niche = Column(String)
