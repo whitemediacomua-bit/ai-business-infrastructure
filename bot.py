@@ -107,10 +107,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if text == "💬 AI-Чат‑боти":
-        add_request(update.effective_user.id, "ai_chat_bot", text)
+        add_request(update.effective_user.id, "ai_chatbot", text)
         await update.message.reply_text(
-            "💬 AI-Чат-боти.\n"
-            "Ми створюємо AI-чат ботів під ключ.\n"
+            "💬 AI-Чат-боти під ключ.\n"
             "Консультують клієнтів, збирають ліди, приймають заявки, продають 24/7, роблять розсилки та інтегруються з CRM.\n"
             "Ваш бізнес працює на автопілоті.",
             reply_markup=reply_markup
