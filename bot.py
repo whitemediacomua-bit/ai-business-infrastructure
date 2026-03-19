@@ -13,7 +13,7 @@ create_table()
 keyboard = [
     ["📊 AI‑Аудит бізнесу", "💡 AI‑Ідейка"],
     ["🌐 Розробка сайтів", "☁️ Хостинг"],
-    ["📈 AI‑Реклама", "💬 AI‑Чат‑боти"],
+    ["📈 AI‑Реклама", "💬 AI-Чат-боти"],
     ["📊 AI-Аналітика", "📧 AI‑Розсилки"],
     ["🔎 AI‑SEO Оптимізація", "📝 Промпт‑менеджер"],
     ["📞 Звʼязатися з менеджером", "📦 Комерційна пропозиція"]
@@ -106,7 +106,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if text == "💬 AI-Чат‑боти":
+    if text == "💬 AI-Чат-боти":
         add_request(update.effective_user.id, "chatbot", text)
         await update.message.reply_text(
             "💬 AI-Чат-боти під ключ.\n"
