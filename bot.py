@@ -21,27 +21,25 @@ keyboard = [
 ]
 reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-
-    # Привітання користувачу
-    await update.message.reply_text("👋 Вітаю! Це AI‑маркетинг бот.")
-
-    # Сповіщення адміну
-    await context.bot.send_message(
-        chat_id=ADMIN_ID,
-        text=f"🚨 Новий користувач запустив бота!\nID: {user.id}\nUsername: @{user.username}"
-    )
-
 # 🟢 Старт
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
+
+    # Додаємо користувача в базу
     add_user(user.id, user.username)
+    
+    # Привітання користувачу
     await update.message.reply_text(
         "👋 Вітаю! Це професійний AI‑чат‑бот від WhiteMedia.\n\n"
         "Я допомагаю бізнесу отримувати клієнтів через рекламу, сайти та штучний інтелект.\n\n"
         "Оберіть послугу нижче:",
         reply_markup=reply_markup
+    )
+
+        # Сповіщення адміну
+    await context.bot.send_message(
+        chat_id=ADMIN_ID,
+        text=f"🚨 Новий користувач запустив бота!\nID: {user.id}\nUsername: @{user.username}"
     )
 
 # 📢 Розсилка
