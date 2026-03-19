@@ -8,9 +8,9 @@ from database import create_table
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
-create_table()
+create_table()  # створює таблиці при старті
 
-# 🔑 Професійне меню з твоїми послугами
+# 🔑 Професійне меню з твоїми послугами-
 keyboard = [
     ["📊 AI‑Аудит бізнесу", "💡 AI‑Ідейка"],
     ["🌐 Розробка сайтів", "☁️ Хостинг"],
@@ -20,6 +20,18 @@ keyboard = [
     ["📞 Звʼязатися з менеджером", "📦 Комерційна пропозиція"]
 ]
 reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    # Привітання користувачу
+    await update.message.reply_text("👋 Вітаю! Це AI‑маркетинг бот.")
+
+    # Сповіщення адміну
+    await context.bot.send_message(
+        chat_id=ADMIN_ID,
+        text=f"🚨 Новий користувач запустив бота!\nID: {user.id}\nUsername: @{user.username}"
+    )
 
 # 🟢 Старт
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -201,11 +213,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     add_request(update.effective_user.id, "ask", text)
     await update.message.reply_text(answer, reply_markup=reply_markup)
 
-# 🚀 Запуск
 app = ApplicationBuilder().token(TOKEN).build()
+
+# Реєстрація хендлера /start
 app.add_handler(CommandHandler("start", start))
+
+# Інші хендлери (наприклад broadcast, handle_message)
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
+# 🚀 Запуск
 if __name__ == "__main__":
     app.run_polling(drop_pending_updates=True)
