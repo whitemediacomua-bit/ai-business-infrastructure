@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 import os
 
+# Підключення до бази (PostgreSQL через DATABASE_URL)
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
@@ -10,18 +11,19 @@ Base = declarative_base()
 
 # 📋 Модель таблиці користувачів
 class User(Base):
-    __tablename__ = "users"
+    tablename = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String)
 
 # 📋 Модель таблиці запитів
 class Request(Base):
-    __tablename__ = "requests"
+    tablename = "requests"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
     command = Column(String)
     text = Column(String)
 
+# 📋 Модель таблиці аудитів
 class Audit(Base):
     tablename = "audits"
     id = Column(Integer, primary_key=True, index=True)
@@ -51,13 +53,7 @@ def add_request(user_id, command, text):
     session.commit()
     session.close()
 
-# 📋 Отримати всіх користувачів
-def get_all_users():
-    session = SessionLocal()
-    users = session.query(User).all()
-    session.close()
-    return [(user.id, user.username) for user in users]
-
+# 📋 Додавання аудиту
 def add_audit(user_id, niche, city, average_check, ads):
     session = SessionLocal()
     new_audit = Audit(
@@ -70,3 +66,10 @@ def add_audit(user_id, niche, city, average_check, ads):
     session.add(new_audit)
     session.commit()
     session.close()
+
+# 📋 Отримати всіх користувачів
+def get_all_users():
+    session = SessionLocal()
+    users = session.query(User).all()
+    session.close()
+    return [(user.id, user.username) for user in users]
