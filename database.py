@@ -22,6 +22,15 @@ class Request(Base):
     command = Column(String)
     text = Column(String)
 
+class Audit(Base):
+    tablename = "audits"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer)
+    niche = Column(String)
+    city = Column(String)
+    average_check = Column(String)
+    ads = Column(String)
+
 # 📋 Створення таблиць
 def create_table():
     Base.metadata.create_all(bind=engine)
@@ -49,30 +58,15 @@ def get_all_users():
     session.close()
     return [(user.id, user.username) for user in users]
 
-import sqlite3
-
-def create_audit_table():
-    conn = sqlite3.connect("users.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS audits (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            niche TEXT,
-            city TEXT,
-            average_check TEXT,
-            ads TEXT
-        )
-    """)
-    conn.commit()
-    conn.close()
-
 def add_audit(user_id, niche, city, average_check, ads):
-    conn = sqlite3.connect("users.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO audits (user_id, niche, city, average_check, ads)
-        VALUES (?, ?, ?, ?, ?)
-    """, (user_id, niche, city, average_check, ads))
-    conn.commit()
-    conn.close()
+    session = SessionLocal()
+    new_audit = Audit(
+        user_id=user_id,
+        niche=niche,
+        city=city,
+        average_check=average_check,
+        ads=ads
+    )
+    session.add(new_audit)
+    session.commit()
+    session.close()
