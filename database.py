@@ -48,3 +48,31 @@ def get_all_users():
     users = session.query(User).all()
     session.close()
     return [(user.id, user.username) for user in users]
+
+import sqlite3
+
+def create_audit_table():
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS audits (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            niche TEXT,
+            city TEXT,
+            average_check TEXT,
+            ads TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def add_audit(user_id, niche, city, average_check, ads):
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO audits (user_id, niche, city, average_check, ads)
+        VALUES (?, ?, ?, ?, ?)
+    """, (user_id, niche, city, average_check, ads))
+    conn.commit()
+    conn.close()
