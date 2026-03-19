@@ -106,7 +106,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if text == "💬 AI-Чат‑боти":
+    if "💬 AI-Чат‑боти" in text:
         add_request(update.effective_user.id, "ai_chatbot", text)
         await update.message.reply_text(
             "💬 AI-Чат-боти під ключ.\n"
