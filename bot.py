@@ -6,7 +6,7 @@ from database import create_table, add_user, add_request, get_all_users
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
-DATABASE_URL = os.getenv(DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 create_table()  # створює таблиці при старті
 
