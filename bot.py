@@ -3,7 +3,6 @@ from ai.ai import ai_audit, ai_answer, ai_idea, ai_website, ai_hosting, ai_ads, 
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, add_user, add_request, get_all_users
-from database import create_table
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
@@ -38,7 +37,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # Сповіщення адміну
     await context.bot.send_message(
-        chat_id=ADMIN_ID,
+        chat_id=526187823,
         text=f"🚨 Новий користувач запустив бота!\nID: {user.id}\nUsername: @{user.username}"
     )
 
