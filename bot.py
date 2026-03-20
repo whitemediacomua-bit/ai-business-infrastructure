@@ -142,6 +142,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Опишіть ваш запит:",
             reply_markup=reply_markup
         )
+        return
 
     if text == "🔎 AI-SEO Оптимізація":
         add_request(user.id, "seo", text)
