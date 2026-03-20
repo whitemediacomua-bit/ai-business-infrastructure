@@ -1,5 +1,5 @@
 import os
-from ai.ai import ai_audit, ai_answer
+from ai.ai import ai_audit, ai_answer, ai_idea, ai_website, ai_hosting, ai_ads, ai_chatbot, ai_analytics, ai_mailing, ai_seo
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, add_user, add_request, get_all_users
