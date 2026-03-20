@@ -8,6 +8,7 @@ from database import create_table, add_user, add_request, get_all_users
 load_dotenv()
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
+DATABASE_URL = os.getenv(DATABASE_URL")
 
 create_table()  # створює таблиці при старті
 
@@ -61,12 +62,16 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # 🔧 Обробка повідомлень
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text.
-    user_id = update.effective_user.id
+    text = update.message.text.lower()
+    user = update.effective_user
     await context.bot.send_message(
-        ADMIN_ID,
-        f"📩 Дія\nID: {user_id}\n{text}"
-    )
+
+    # Перевірка на HOT LEAD
+    if "хочу" in text or "500" in text or "консультація" in text:
+        await context.bot.send_message(
+            chat_id=ADMIN_ID,
+            text=f"🔥 HOT LEAD\n\nID: {user.id}\nUsername: @{user.username}\nПовідомлення: {update.message.text}"
+        )
 
     if text == "📊 AI‑Аудит бізнесу":
         await update.message.reply_text(
@@ -217,15 +222,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     add_request(update.effective_user.id, "ask", text)
     await update.message.reply_text(answer, reply_markup=reply_markup)
 
+# 🚀 Запуск
 app = ApplicationBuilder().token(TOKEN).build()
-
-# Реєстрація хендлера /start
 app.add_handler(CommandHandler("start", start))
-
-# Інші хендлери (наприклад broadcast, handle_message)
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-# 🚀 Запуск
 if __name__ == "__main__":
     app.run_polling(drop_pending_updates=True)
