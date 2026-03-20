@@ -1,11 +1,11 @@
 import os
+from dotenv import load_dotenv
 from ai.ai import ai_audit, ai_answer, ai_idea, ai_website, ai_hosting, ai_ads, ai_chatbot, ai_analytics, ai_mailing, ai_seo
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from database import create_table, add_user, add_request, get_all_users
-from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
@@ -37,9 +37,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
 
-        # Сповіщення адміну
+    # Сповіщення адміну
     await context.bot.send_message(
-        chat_id=526187823,
+        chat_id=ADMIN_ID,
         text=f"🚨 Новий користувач запустив бота!\nID: {user.id}\nUsername: @{user.username}"
     )
 
@@ -61,7 +61,12 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # 🔧 Обробка повідомлень
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
+    text = update.message.text.
+    user_id = update.effective_user.id
+    await context.bot.send_message(
+        ADMIN_ID,
+        f"📩 Дія\nID: {user_id}\n{text}"
+    )
 
     if text == "📊 AI‑Аудит бізнесу":
         await update.message.reply_text(
@@ -70,7 +75,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.",
             reply_markup=reply_markup
         )
-        context.user_data["waiting_audit"] = True
+        context.user_data["waiting_analytics"] = True
         return
 
     if context.user_data.get("waiting_audit"):
