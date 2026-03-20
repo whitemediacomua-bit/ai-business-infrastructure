@@ -1,13 +1,7 @@
 import os
-from ai.ai import (
-    ai_audit, ai_answer, ai_idea, ai_website,
-    ai_hosting, ai_ads, ai_chatbot,
-    ai_analytics, ai_mailing, ai_seo
-)
-
+from ai.ai import ai_audit, ai_answer
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-
 from database import create_table, add_user, add_request, get_all_users
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -24,105 +18,84 @@ keyboard = [
     ["🔎 AI-SEO Оптимізація", "📝 Промпт-менеджер"],
     ["📞 Звʼязатися з менеджером", "📦 Комерційна пропозиція"]
 ]
-
 reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
 
 # 🟢 Старт
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
 
+    # ✅ Збереження в базу
     add_user(user.id, user.username)
 
+    # 👋 Користувачу
     await update.message.reply_text(
         "👋 Вітаю! Це професійний AI-чат-бот від WhiteMedia.\n\n"
-        "Я допомагаю бізнесу отримувати клієнтів через рекламу, сайти та штучний інтелект.\n\n"
-        "Оберіть послугу нижче:",
+        "Я допомагаю бізнесу отримувати клієнтів через рекламу, сайти та AI.\n\n"
+        "Оберіть послугу:",
         reply_markup=reply_markup
     )
 
+    # 🚨 Адміну
     await context.bot.send_message(
         chat_id=ADMIN_ID,
-        text=(
-            f"🚨 HOT LEAD\n\n"
-            f"Новий користувач запустив бота!\n"
-            f"ID: {user.id}\n"
-            f"Username: @{user.username}\n"
-            f"Повідомлення: /start"
-        )
+        text=f"🚨 Новий користувач\nID: {user.id}\nUsername: @{user.username}"
     )
-
 
 # 📢 Розсилка
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
-        await update.message.reply_text("❌ У вас немає доступу")
         return
 
     users = get_all_users()
     message = " ".join(context.args)
 
-    sent = 0
     for user in users:
         try:
             await context.bot.send_message(chat_id=user[0], text=message)
-            sent += 1
         except:
             pass
 
-    await update.message.reply_text(f"👥 Відправлено {sent} користувачам")
+    await update.message.reply_text("✅ Розсилка завершена")
 
 
 # 🔧 Обробка повідомлень
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    text_lower = text.lower()
     user = update.effective_user
 
-    # 🔥 Лог кліків
+    # 🔔 Повідомлення адміну про кожну дію
     await context.bot.send_message(
         chat_id=ADMIN_ID,
-        text=f"🔥 Користувач {user.id} натиснув: {text}"
+        text=f"👤 {user.id} (@{user.username}) натиснув:\n{text}"
     )
 
-    # 📊 АУДИТ
     if text == "📊 AI-Аудит бізнесу":
+        context.user_data["waiting_audit"] = True
         await update.message.reply_text(
             "📊 Ми аналізуємо Вашу нішу, конкурентів та точки росту.\n"
             "Отримайте готову стратегію розвитку бізнесу за допомогою AI.\n"
             "Опишіть ваш бізнес: ніша, місто, середній чек, чи є реклама.",
             reply_markup=reply_markup
         )
-        context.user_data["waiting_audit"] = True
         return
-
+        
     if context.user_data.get("waiting_audit"):
-        await update.message.reply_text("🔍 Аналізую бізнес...", reply_markup=reply_markup)
         result = ai_audit(text)
         add_request(user.id, "audit", text)
         await update.message.reply_text(result, reply_markup=reply_markup)
         context.user_data["waiting_audit"] = False
         return
 
-    # 💡 ІДЕЇ
     if text == "💡 AI-Ідейка":
+        add_request(user.id, "idea", text)
         await update.message.reply_text(
             "💡 Нейромережа згенерує десятки ідей для контенту, реклами та розвитку бренду.\n"
             "Ви отримаєте натхнення за хвилини.\n\n"
             "Опишіть ваш бізнес:",
             reply_markup=reply_markup
         )
-        context.user_data["waiting_idea"] = True
         return
 
-    if context.user_data.get("waiting_idea"):
-        result = ai_idea(text)
-        add_request(user.id, "idea", text)
-        await update.message.reply_text(result, reply_markup=reply_markup)
-        context.user_data["waiting_idea"] = False
-        return
-
-    # 🌐 САЙТИ
     if text == "🌐 Розробка сайтів":
         add_request(user.id, "website", text)
         await update.message.reply_text(
@@ -132,7 +105,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # ☁️ ХОСТИНГ
     if text == "☁️ Хостинг":
         add_request(user.id, "hosting", text)
         await update.message.reply_text(
@@ -142,7 +114,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # 📈 РЕКЛАМА
     if text == "📈 AI-Реклама":
         add_request(user.id, "ads", text)
         await update.message.reply_text(
@@ -153,7 +124,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # 💬 ЧАТ-БОТИ
     if text == "💬 AI-Чат-боти":
         add_request(user.id, "chatbot", text)
         await update.message.reply_text(
@@ -164,26 +134,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # 📊 АНАЛІТИКА
     if text == "📊 AI-Аналітика":
+        add_request(user.id, "analytics", text)
         await update.message.reply_text(
             "📊 AI_Аналітика допоможе прогнозувати продажі, аналізувати данні та показувати Вам повну картину бізнесу.\n"
             "Ви отримуєте зрозумілі звіти та прогнози для прийняття рішень.\n\n"
             "Опишіть ваш запит:",
             reply_markup=reply_markup
         )
-        context.user_data["waiting_analytics"] = True
-        return
 
-    if context.user_data.get("waiting_analytics"):
-        await update.message.reply_text("📊 Аналізую дані...", reply_markup=reply_markup)
-        result = ai_analytics(text)
-        add_request(user.id, "analytics", text)
-        await update.message.reply_text(result, reply_markup=reply_markup)
-        context.user_data["waiting_analytics"] = False
-        return
-
-    # 🔎 SEO
     if text == "🔎 AI-SEO Оптимізація":
         add_request(user.id, "seo", text)
         await update.message.reply_text(
@@ -195,7 +154,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # 📧 РОЗСИЛКИ
     if text == "📧 AI-Розсилки":
         add_request(user.id, "mailing", text)
         await update.message.reply_text(
@@ -207,7 +165,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # 📦 КП
     if text == "📦 Комерційна пропозиція":
         add_request(user.id, "commercial-offer", text)
         await update.message.reply_text(
@@ -240,7 +197,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # 📝 ПРОМПТИ
     if text == "📝 Промпт-менеджер":
         await update.message.reply_text(
             "📝 Ми створюємо професійні AI-промпти для маркетингу, реклами та контенту.\n"
