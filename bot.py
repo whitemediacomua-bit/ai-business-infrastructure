@@ -135,7 +135,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if text == "📊 AI-Аналітика":
-        add_request(user.id, "analytics", text)
+        add_request(user.id, "ai_analytics", text)
         await update.message.reply_text(
             "📊 AI_Аналітика допоможе прогнозувати продажі, аналізувати данні та показувати Вам повну картину бізнесу.\n"
             "Ви отримуєте зрозумілі звіти та прогнози для прийняття рішень.\n\n"
