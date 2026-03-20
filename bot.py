@@ -39,7 +39,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Сповіщення адміну
     await context.bot.send_message(
         chat_id=ADMIN_ID,
-        text=f"🚨 Новий користувач запустив бота!\nID: {user.id}\nUsername: @{user.username}"
+        text=f"🚨 HOT LEAD\n\nID: Новий користувач запустив бота!\nID: {user.id}\nUsername: @{user.username: @{user.username}"\nПовідомлення: {update.message.text}"
     )
 
 # 📢 Розсилка
@@ -63,13 +63,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower()
     user = update.effective_user
     await context.bot.send_message(
-
-    # Перевірка на HOT LEAD
-    if "хочу" in text or "500" in text or "консультація" in text:
-        await context.bot.send_message(
-            chat_id=ADMIN_ID,
-            text=f"🔥 HOT LEAD\n\nID: {user.id}\nUsername: @{user.username}\nПовідомлення: {update.message.text}"
-        )
 
     if text == "📊 AI‑Аудит бізнесу":
         await update.message.reply_text(
